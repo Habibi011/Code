@@ -19,6 +19,7 @@ def game():
         print("ROUND",roundNum+1)
         print(" ")
         playerChoice = input("Enter your choice; Rock(r), Paper(p), Scissors(s): ")
+        print("YOU CHOSE: ",("ROCK" if playerChoice == 'r' else "PAPER" if playerChoice == 'p' else "SCISSORS"))
         time.sleep(1)
         print(" ")
         computerChoice = random.randint(0,2)
@@ -34,10 +35,10 @@ def game():
                         scorePlayer+=1
                     case 1:
                         print("COMPUTER WON THE ROUND")
-                        scorePlayer+=1
+                        scoreComputer+=1
                     case 2:
                         print("YOU WON THE ROUND")
-                        scoreComputer+=1
+                        scorePlayer+=1
             case 'p':
                 match(computerChoice):
                     case 0:
