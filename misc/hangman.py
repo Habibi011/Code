@@ -217,12 +217,14 @@ def main():
       print("")
 
    if totalAttempts!=0:
-      time.sleep(0.5)
+      load()
+      sys.stdout.write('\x1b[2K')
       print("! 🎊 YOU WON 🎊 !")
       print("")
       print("The word was:",word)
    else:
-      time.sleep(0.5)
+      load()
+      sys.stdout.write('\x1b[2K')
       print("! 😥 YOU LOST 😥 !")
       print("")
       print("The word was:",word)
