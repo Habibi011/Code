@@ -26,7 +26,7 @@ def askNum():
    clearScreen()
    checkNum= ask.isnumeric()
    if not checkNum:
-        print("ERROR !! Invalid word! Only integers allowed!")
+        print("ERROR !! Invalid number! Only integers allowed!")
         print("")
         print("------------------------------------------------------------------------")
         print("")
