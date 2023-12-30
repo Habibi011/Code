@@ -1,0 +1,4 @@
+tup=(0,1)
+for x in range(7):
+    tup+=((tup[x]+tup[x+1]),)
+print(tup)

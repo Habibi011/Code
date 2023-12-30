@@ -1,7 +1,6 @@
 import subprocess
 import sys
 import os
-import math
 import random
 import base64
 import time
@@ -12,7 +11,8 @@ def install(package):
 def cScreen():
     os.system('cls' if os.name == 'nt' else 'clear')
 def cLine():
-    sys.stdout.write('\x1b[2K') 
+     sys.stdout.write('\x1b[1A')
+     sys.stdout.write('\x1b[2K')
 try:
     import mysql.connector
     print("importing \"mysql-connector\"",end="\r")
@@ -24,12 +24,9 @@ except:
     import mysql.connector
 try:
     import winsound
-    print("importing beep.mp3")
 except ImportError:
-    import os
     def playsound(frequency,duration):
-        #apt-get install beep
-        os.system('beep -f %s -l %s' % (frequency,duration))
+        pass
 else:
     def playsound(frequency,duration):
         winsound.Beep(frequency,duration)
@@ -48,15 +45,11 @@ def chatfunc(us1,us2):
         print(nName+" left the chat")
         print("Thanks for using Super ChatterBox!")
         input("Press any key to end: ")
-        exit()
+        return None
     else:
         print(us2," is typing.....")
         reply(us1,us2)
 def reply(me,them):
-    global firstTime
-    if firstTime==True:
-        print(them,"entered the chat")
-        firstTime=False
     time.sleep(2)
     sql="SELECT status from chat WHERE user=\""+them+"\""
     crsr.execute(sql)
@@ -66,6 +59,7 @@ def reply(me,them):
         status=crsr.fetchall()
         mydb.commit()
         time.sleep(0.5)
+    cLine()
     sql="SELECT message from chat WHERE user=\""+them+"\""
     crsr.execute(sql)
     msg=crsr.fetchall()
@@ -73,8 +67,7 @@ def reply(me,them):
         print(them+" left the chat.")
         print("Thanks for using Super ChatterBox")
         input("Press any key to end: ")
-        exit()
-    cLine()
+        return None
     print(them+" :",msg[0][0])
     playsound(700,500)
     sql="UPDATE chat SET status=True WHERE user=\""+me+"\""
@@ -83,38 +76,48 @@ def reply(me,them):
     chatfunc(me,them)
 #>>>main
 cScreen()
+mydb=None
 print("Loading Super ChatterBox Server..")
-mydb = mysql.connector.connect(
-  host="sql12.freesqldatabase.com",
-  user="sql12665125",
-  password=str(base64.b64decode('djV4V2FONmJZdQ=='))[2:-1],
-  database="sql12665125"
-)
+def loadServer():
+    global mydb
+    try:
+        mydb = mysql.connector.connect(
+        host="sql12.freesqldatabase.com",
+        user="sql12665125",
+        password=str(base64.b64decode('djV4V2FONmJZdQ=='))[2:-1],
+        database="sql12665125"
+        )
+    except:
+        loadServer()
+loadServer()
 crsr=mydb.cursor(buffered=True)
 crsr.execute("SHOW TABLES LIKE \'chat\'")
 tab=crsr.fetchall()
 def checkTab():
     try:
-        if tab[0][0]=='chat':
-            crsr.execute("SELECT*FROM chat")
-            res=crsr.fetchall()
-            if len(res)==0:
-                pass
-            else:
-                crsr.execute("DROP TABLE chat")
-                mydb.commit()
-                crsr.execute("CREATE TABLE chat (id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(255), message VARCHAR(255),status boolean)")
-                mydb.commit()
+        try:
+            if tab[0][0]=='chat':
+                crsr.execute("SELECT*FROM chat")
+                res=crsr.fetchall()
+                if len(res)==0:
+                    pass
+                else:
+                    crsr.execute("DROP TABLE chat")
+                    mydb.commit()
+                    crsr.execute("CREATE TABLE chat (id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(255), message VARCHAR(255),status boolean)")
+                    mydb.commit()
+        except:
+            crsr.execute("CREATE TABLE chat (id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(255), message VARCHAR(255),status boolean)")
+            mydb.commit()
     except:
-        crsr.execute("CREATE TABLE chat (id INT AUTO_INCREMENT PRIMARY KEY, user VARCHAR(255), message VARCHAR(255),status boolean)")
-        mydb.commit()
+        checkTab()
 checkTab()
 print(mydb)
 print("Server loaded!")
 time.sleep(2)
 cScreen()
 print("           ~~~  SUPER CHATTERBOX  ~~~")
-print("1)Two-User Buddy Chat in python (Pls do not use IDLE command line)")
+print("1)Two-User Buddy Chat in python (doesnt run on idle, Run the run.bat file for best experience))")
 print("2)Enter Nickname to Start Chatting with your buddy")
 print("3)Enter /endchat to quit chat")
 print("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
@@ -150,5 +153,7 @@ if id[0][0] ==1:
 else:
     crsr.execute("SELECT user from chat WHERE id=1")
     x=crsr.fetchall()
-    print(x[0][0]+" is typing...")
+    print(x[0][0],"entered the chat")
+    firstTime=False
+    print(x[0][0],"is typing...")
     reply(nName,x[0][0])
